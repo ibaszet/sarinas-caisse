@@ -1,0 +1,36 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Images produit du Stock : uploadées par le site admin uniquement,
+    // mais servies en lecture publique (elles s'affichent aussi comme illustration,
+    // sans donnée sensible dedans — juste une photo de produit).
+    // Images produit du Stock : uploadées par le site admin uniquement,
+    // mais servies en lecture publique (elles s'affichent aussi comme illustration,
+    // sans donnée sensible dedans — juste une photo de produit).
+    // Chemin réel utilisé par l'app : stock-images/<timestamp>_<nomfichier>
+    match /stock-images/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.uid == 'vMr8gGxPwDh71k2olWRDXFPwVlK2'
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    // Photos de profil des employées : mêmes règles que le stock (upload admin,
+    // lecture publique — ce sont de simples photos de profil, sans donnée sensible).
+    // Chemin réel utilisé par l'app : employee-photos/<timestamp>_<nomfichier>
+    match /employee-photos/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.uid == 'vMr8gGxPwDh71k2olWRDXFPwVlK2'
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    // Tout le reste du bucket est fermé par défaut.
+    match /{allOtherPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

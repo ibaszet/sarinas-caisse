@@ -1,0 +1,199 @@
+{
+  "rules": {
+    "sarinas-beauty-center": {
+
+      ".read": false,
+      ".write": false,
+
+      "bookings": {
+        ".read": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        "$bookingId": {
+          ".write": "(auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2') || (!data.exists() && newData.exists())",
+          ".validate": "newData.hasChildren(['name','phone','service','date','time','status']) && ((auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2') || (newData.child('status').val() === 'new' && newData.child('source').val() === 'website' && newData.child('clientId').val() == null && newData.child('priceAtBooking').val() == null && newData.child('paid').val() == null && newData.child('archived').val() == null))",
+
+          "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length < 200" },
+          "phone": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length < 40" },
+          "service": { ".validate": "newData.isString() && newData.val().length < 200" },
+          "serviceId": { ".validate": "newData.isString() || newData.val() == null" },
+          "clientId": { ".validate": "newData.isString() || newData.val() == null" },
+          "priceAtBooking": { ".validate": "(newData.isNumber() && newData.val() >= 0) || newData.val() == null" },
+          "durationAtBooking": { ".validate": "(newData.isNumber() && newData.val() >= 0) || newData.val() == null" },
+          "date": { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)" },
+          "time": { ".validate": "newData.isString() && newData.val().matches(/^(0[8-9]|1[0-9]):[0-5][0-9]$/)" },
+          "note": { ".validate": "(newData.isString() && newData.val().length < 1000) || newData.val() == null" },
+          "status": { ".validate": "newData.val() === 'new' || newData.val() === 'confirmed' || newData.val() === 'done' || newData.val() === 'cancelled'" },
+          "source": { ".validate": "newData.val() === 'website' || newData.val() === 'manual'" },
+          "archived": { ".validate": "newData.isBoolean() || newData.val() == null" },
+          "archivedAt": { ".validate": "newData.val() == null || newData.val() === now" },
+          "paid": { ".validate": "newData.isBoolean() || newData.val() == null" },
+          "createdAt": { ".validate": "!data.exists() ? newData.val() === now : newData.val() === data.val()" },
+          "id": { ".validate": "newData.isString() || newData.val() == null" },
+          "appointment": { ".validate": "newData.isString() || newData.val() == null" },
+          "$other": { ".validate": false }
+        }
+      },
+
+      "takenSlots": {
+        ".read": true,
+        "$slot": {
+          ".write": "(!data.exists() && newData.val() === true) || (auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2')",
+          ".validate": "newData.isBoolean() && $slot.matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}:[0-9]{2}$/)"
+        }
+      },
+
+      "services": {
+        ".read": true,
+        ".write": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        "$serviceId": {
+          ".validate": "newData.hasChildren(['name','price','duration'])",
+          "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length < 150" },
+          "price": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "duration": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "category": { ".validate": "newData.isString() || newData.val() == null" },
+          "description": { ".validate": "(newData.isString() && newData.val().length < 2000) || newData.val() == null" },
+          "active": { ".validate": "newData.isBoolean() || newData.val() == null" },
+          "archived": { ".validate": "newData.isBoolean() || newData.val() == null" },
+          "archivedAt": { ".validate": "newData.val() == null || newData.val() === now" },
+          "createdAt": { ".validate": "!data.exists() ? newData.val() === now : newData.val() === data.val()" },
+          "$other": { ".validate": false }
+        }
+      },
+
+      "settings": {
+        "general": {
+          "salonName": { ".read": true },
+          "phone": { ".read": true },
+          "address": { ".read": true }
+        },
+        ".read": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        ".write": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'"
+      },
+
+      "clients": {
+        ".read": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        ".write": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        "$clientId": {
+          ".validate": "newData.hasChildren(['name','phone'])",
+          "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length < 150" },
+          "phone": { ".validate": "newData.isString() && newData.val().length < 40" },
+          "notes": { ".validate": "(newData.isString() && newData.val().length < 2000) || newData.val() == null" },
+          "archived": { ".validate": "newData.isBoolean() || newData.val() == null" },
+          "archivedAt": { ".validate": "newData.val() == null || newData.val() === now" },
+          "createdAt": { ".validate": "!data.exists() ? newData.val() === now : newData.val() === data.val()" },
+          "$other": { ".validate": false }
+        }
+      },
+
+      "payments": {
+        ".read": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        ".write": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        "$paymentId": {
+          ".validate": "newData.hasChildren(['clientName','amount','date'])",
+          "clientId": { ".validate": "newData.isString() || newData.val() == null" },
+          "clientName": { ".validate": "newData.isString() && newData.val().length < 150" },
+          "clientPhone": { ".validate": "newData.isString() || newData.val() == null" },
+          "serviceId": { ".validate": "newData.isString() || newData.val() == null" },
+          "service": { ".validate": "newData.isString() || newData.val() == null" },
+          "bookingId": { ".validate": "newData.isString() || newData.val() == null" },
+          "amount": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "grossAmount": { ".validate": "(newData.isNumber() && newData.val() >= 0) || newData.val() == null" },
+          "discountPercent": { ".validate": "(newData.isNumber() && newData.val() >= 0 && newData.val() <= 100) || newData.val() == null" },
+          "date": { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)" },
+          "method": { ".validate": "newData.val() === 'Espèces' || newData.val() === 'CCP' || newData.val() === 'Virement' || newData.val() === 'Autre'" },
+          "archived": { ".validate": "newData.isBoolean() || newData.val() == null" },
+          "archivedAt": { ".validate": "newData.val() == null || newData.val() === now" },
+          "createdAt": { ".validate": "!data.exists() ? newData.val() === now : newData.val() === data.val()" },
+          "queuedAt": { ".validate": "newData.isNumber() || newData.val() == null" },
+          "$other": { ".validate": false }
+        }
+      },
+
+      "expenses": {
+        ".read": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        ".write": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        "$expenseId": {
+          ".validate": "newData.hasChildren(['label','amount','date'])",
+          "label": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length < 200" },
+          "amount": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "date": { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)" },
+          "category": { ".validate": "newData.val() === 'Stock' || newData.val() === 'Loyer' || newData.val() === 'Salaires' || newData.val() === 'Équipement' || newData.val() === 'Autre'" },
+          "note": { ".validate": "(newData.isString() && newData.val().length < 2000) || newData.val() == null" },
+          "archived": { ".validate": "newData.isBoolean() || newData.val() == null" },
+          "archivedAt": { ".validate": "newData.val() == null || newData.val() === now" },
+          "createdAt": { ".validate": "!data.exists() ? newData.val() === now : newData.val() === data.val()" },
+          "$other": { ".validate": false }
+        }
+      },
+
+      "stock": {
+        ".read": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        ".write": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        "$stockId": {
+          ".validate": "newData.hasChildren(['name','quantity','threshold'])",
+          "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length < 150" },
+          "quantity": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "purchasePrice": { ".validate": "(newData.isNumber() && newData.val() >= 0) || newData.val() == null" },
+          "threshold": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "barcode": { ".validate": "(newData.isString() && newData.val().length < 100) || newData.val() == null" },
+          "image": { ".validate": "newData.isString() || newData.val() == null" },
+          "archived": { ".validate": "newData.isBoolean() || newData.val() == null" },
+          "archivedAt": { ".validate": "newData.val() == null || newData.val() === now" },
+          "createdAt": { ".validate": "!data.exists() ? newData.val() === now : newData.val() === data.val()" },
+          "$other": { ".validate": false }
+        }
+      },
+
+      "stockMovements": {
+        ".read": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        ".write": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        "$movementId": {
+          ".validate": "newData.hasChildren(['stockId','delta'])",
+          "stockId": { ".validate": "newData.isString()" },
+          "delta": { ".validate": "newData.isNumber()" },
+          "reason": { ".validate": "(newData.isString() && newData.val().length < 200) || newData.val() == null" },
+          "by": { ".validate": "newData.isString() || newData.val() == null" },
+          "at": { ".validate": "!data.exists() ? newData.val() === now : newData.val() === data.val()" },
+          "$other": { ".validate": false }
+        }
+      },
+
+      "employees": {
+        ".read": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        ".write": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        "$employeeId": {
+          ".validate": "newData.hasChildren(['name'])",
+          "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length < 150" },
+          "phone": { ".validate": "newData.isString() || newData.val() == null" },
+          "chair": { ".validate": "newData.isString() || newData.val() == null" },
+          "role": { ".validate": "newData.isString() || newData.val() == null" },
+          "status": { ".validate": "newData.val() === 'Temps plein' || newData.val() === 'Temps partiel' || newData.val() === 'Freelance' || newData.val() === 'Stagiaire' || newData.val() == null" },
+          "commission": { ".validate": "(newData.isNumber() && newData.val() >= 0 && newData.val() <= 100) || newData.val() == null" },
+          "serviceIds": { ".validate": "newData.hasChildren() || newData.val() == null" },
+          "notes": { ".validate": "(newData.isString() && newData.val().length < 2000) || newData.val() == null" },
+          "active": { ".validate": "newData.isBoolean() || newData.val() == null" },
+          "photo": { ".validate": "newData.isString() || newData.val() == null" },
+          "archived": { ".validate": "newData.isBoolean() || newData.val() == null" },
+          "archivedAt": { ".validate": "newData.val() == null || newData.val() === now" },
+          "createdAt": { ".validate": "!data.exists() ? newData.val() === now : newData.val() === data.val()" },
+          "$other": { ".validate": false }
+        }
+      },
+
+      "auditLogs": {
+        ".read": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2'",
+        "$logId": {
+          ".write": "auth != null && auth.uid === 'vMr8gGxPwDh71k2olWRDXFPwVlK2' && !data.exists()",
+          ".validate": "newData.hasChildren(['action','entity','by','at'])",
+          "action": { ".validate": "newData.val() === 'create' || newData.val() === 'update' || newData.val() === 'archive' || newData.val() === 'restore' || newData.val() === 'permanent_delete' || newData.val() === 'backup_export'" },
+          "entity": { ".validate": "newData.isString() && newData.val().length < 60" },
+          "entityId": { ".validate": "newData.isString() || newData.val() == null" },
+          "details": { ".validate": "(newData.isString() && newData.val().length < 500) || newData.val() == null" },
+          "by": { ".validate": "newData.isString() && newData.val().length < 150" },
+          "at": { ".validate": "newData.val() === now" },
+          "$other": { ".validate": false }
+        }
+      }
+
+    }
+  }
+}
