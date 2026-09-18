@@ -373,6 +373,59 @@ a{color:inherit;}
 
 .loading-state{text-align:center;padding:60px 20px;color:var(--gray);font-size:13.5px;}
 
+/* ============ CAISSE — écran de vente rapide ============ */
+.caisse-layout{display:grid;grid-template-columns:1.3fr 1fr;gap:22px;align-items:start;}
+@media (max-width:980px){.caisse-layout{grid-template-columns:1fr;}}
+.caisse-panel{background:var(--white);border:1px solid var(--line);border-radius:4px;padding:22px;box-shadow:var(--shadow);}
+.caisse-panel h2{font-size:16px;font-style:italic;margin-bottom:14px;}
+.caisse-sticky{position:sticky;top:80px;}
+
+.caisse-svc-search{width:100%;padding:12px 15px;border:1px solid var(--line);background:var(--ivory);font-size:14px;border-radius:2px;margin-bottom:12px;}
+.caisse-svc-list{max-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:3px;}
+.caisse-svc-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;}
+.caisse-svc-row:last-child{border-bottom:none;}
+.caisse-svc-row:hover{background:var(--ivory-deep);}
+.caisse-svc-row .svc-name{font-size:13.5px;}
+.caisse-svc-row .svc-price{font-size:12.5px;color:var(--gold);font-weight:700;}
+
+.cart-list{margin:14px 0;}
+.cart-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);gap:10px;}
+.cart-item-name{font-size:13.5px;flex:1;}
+.cart-item-price{font-size:13px;color:var(--gray);white-space:nowrap;}
+.cart-item-remove{background:none;border:none;color:var(--red);font-size:17px;line-height:1;padding:4px;}
+.cart-empty{color:var(--gray);font-size:13px;text-align:center;padding:24px 0;}
+
+.cart-totals{border-top:1px solid var(--line);padding-top:12px;margin-top:6px;}
+.cart-total-row{display:flex;justify-content:space-between;font-size:13.5px;padding:4px 0;}
+.cart-total-row.grand{font-family:'Playfair Display',serif;font-size:21px;padding-top:8px;}
+
+.paysplit-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+.paysplit-row select{flex:1.2;}
+.paysplit-row input{flex:1;}
+.paysplit-remove{background:var(--red-bg);color:var(--red);border:none;border-radius:50%;width:30px;height:30px;flex-shrink:0;font-size:15px;}
+.paysplit-remaining{font-size:12.5px;padding:8px 0;font-weight:600;}
+.paysplit-remaining.ok{color:var(--green);}
+.paysplit-remaining.bad{color:var(--red);}
+
+.encaisser-btn{width:100%;padding:18px;background:var(--black);color:#fff;border:none;font-size:14px;
+  text-transform:uppercase;letter-spacing:.1em;font-weight:700;border-radius:2px;margin-top:14px;}
+.encaisser-btn:disabled{background:var(--gray-bg);color:var(--gray);}
+.encaisser-btn:not(:disabled):active{background:var(--gold);}
+
+/* ============ CLÔTURE DE CAISSE ============ */
+.eod-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px;}
+.eod-row.grand{font-family:'Playfair Display',serif;font-size:19px;border-bottom:none;padding-top:14px;}
+.eod-variance{padding:14px 16px;border-radius:3px;margin-top:14px;font-weight:700;text-align:center;}
+.eod-variance.zero{background:var(--green-bg);color:var(--green);}
+.eod-variance.diff{background:var(--red-bg);color:var(--red);}
+
+/* ============ COMMISSIONS ============ */
+.commission-card{background:var(--white);border:1px solid var(--line);border-radius:4px;padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow);}
+.commission-row{display:flex;justify-content:space-between;align-items:center;}
+.commission-name{font-weight:600;font-size:14.5px;}
+.commission-sub{font-size:12px;color:var(--gray);margin-top:2px;}
+.commission-amount{font-family:'Playfair Display',serif;font-size:19px;color:var(--gold);}
+
 /* ============ MODAL ============ */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(23,19,16,.55);z-index:200;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.show{display:flex;}
@@ -582,6 +635,7 @@ a{color:inherit;}
   <div class="app-shell">
   <div class="tabs">
     <button class="tab-btn active" data-tab="dashboard">🏠 Tableau de bord</button>
+    <button class="tab-btn" data-tab="caisse">🧾 Caisse</button>
     <button class="tab-btn" data-tab="rdv">📅 Rendez-vous <span class="tab-count" id="countAll">0</span></button>
     <button class="tab-btn" data-tab="clients">👩 Clientes <span class="tab-count" id="countClients">0</span></button>
     <button class="tab-btn" data-tab="services">💇‍♀️ Services</button>
@@ -646,6 +700,61 @@ a{color:inherit;}
         <div class="panel-block">
           <div class="panel-block-head"><h2>Dernières opérations</h2></div>
           <div id="recentOpsList"><div class="loading-state">Chargement…</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CAISSE ===== -->
+    <div class="tab-panel" id="tab-caisse">
+      <div class="section-head">
+        <h1>Caisse</h1>
+        <button class="btn btn-ghost" id="openEodBtn">🔒 Clôturer la caisse</button>
+      </div>
+
+      <div class="caisse-layout">
+        <!-- Colonne gauche : recherche & sélection des services -->
+        <div class="caisse-panel">
+          <h2>1. Cliente</h2>
+          <input type="text" class="caisse-svc-search" id="caisseClientSearch" list="caisseClientList" placeholder="Nom de la cliente (ou laisser vide = passage)">
+          <datalist id="caisseClientList"></datalist>
+
+          <h2 style="margin-top:22px;">2. Employée</h2>
+          <select id="caisseEmployee" class="filter-select" style="width:100%;">
+            <option value="">— Aucune (facultatif) —</option>
+          </select>
+
+          <h2 style="margin-top:22px;">3. Ajouter des services</h2>
+          <input type="text" class="caisse-svc-search" id="caisseSvcSearch" placeholder="Rechercher un service…">
+          <div class="caisse-svc-list" id="caisseSvcList"></div>
+        </div>
+
+        <!-- Colonne droite : panier + paiement -->
+        <div class="caisse-panel caisse-sticky">
+          <h2>Ticket</h2>
+          <div class="cart-list" id="cartList"><div class="cart-empty">Aucun service ajouté.</div></div>
+
+          <div class="field" style="margin-bottom:10px;">
+            <label>Remise (%)</label>
+            <input type="number" id="caisseDiscount" class="numpad-input" min="0" max="100" value="0">
+          </div>
+
+          <div class="cart-totals">
+            <div class="cart-total-row"><span>Sous-total</span><span id="cartSubtotal">0 DA</span></div>
+            <div class="cart-total-row"><span>Remise</span><span id="cartDiscountAmount">-0 DA</span></div>
+            <div class="cart-total-row grand"><span>Total</span><span id="cartGrandTotal">0 DA</span></div>
+          </div>
+
+          <h2 style="margin-top:20px;">Paiement</h2>
+          <div id="paysplitRows"></div>
+          <button type="button" class="btn btn-ghost btn-sm" id="addPaysplitBtn" style="width:100%;">+ Ajouter un mode de paiement</button>
+          <div class="paysplit-remaining" id="paysplitRemaining"></div>
+
+          <div class="field" style="display:flex;align-items:center;gap:10px;margin-top:14px;">
+            <input type="checkbox" id="caissePrint" checked style="width:auto;">
+            <label style="margin:0;text-transform:none;font-size:13px;letter-spacing:0;font-weight:500;color:var(--charcoal);" for="caissePrint">🖨 Imprimer le ticket après encaissement</label>
+          </div>
+
+          <button type="button" class="encaisser-btn" id="encaisserBtn" disabled>ENCAISSER</button>
         </div>
       </div>
     </div>
@@ -841,8 +950,19 @@ a{color:inherit;}
       <div class="subnav">
         <button class="subnav-btn active" data-teamsub="active">Actives</button>
         <button class="subnav-btn" data-teamsub="inactive">Inactives</button>
+        <button class="subnav-btn" data-teamsub="commissions">💰 Commissions</button>
       </div>
       <div class="team-grid" id="teamGrid"><div class="loading-state">Chargement…</div></div>
+      <div id="commissionsView" style="display:none;">
+        <div class="toolbar">
+          <select class="filter-select" id="commissionPeriodSelect">
+            <option value="today">Aujourd'hui</option>
+            <option value="week">Cette semaine</option>
+            <option value="month" selected>Ce mois</option>
+          </select>
+        </div>
+        <div id="commissionsList"><div class="loading-state">Chargement…</div></div>
+      </div>
     </div>
 
     <!-- ===== SETTINGS ===== -->
@@ -1075,6 +1195,28 @@ a{color:inherit;}
   </div>
 </div>
 
+<div class="modal-overlay" id="modalEod">
+  <div class="modal-box">
+    <div class="modal-head"><h2>🔒 Clôture de caisse</h2><button class="modal-close" data-close="modalEod">&times;</button></div>
+    <div class="modal-body">
+      <div id="eodBreakdown"></div>
+      <div class="eod-row grand"><span>Total théorique</span><span id="eodTheoretical">0 DA</span></div>
+      <div class="field" style="margin-top:16px;">
+        <label>Espèces réellement comptées (DA)</label>
+        <input type="number" id="eodCounted" class="numpad-input" min="0" placeholder="Comptez le tiroir-caisse et entrez le montant">
+      </div>
+      <div id="eodVarianceBox"></div>
+      <div class="field" style="margin-top:14px;">
+        <label>Note (optionnel)</label>
+        <textarea id="eodNote" placeholder="Remarque sur l'écart, incident…"></textarea>
+      </div>
+      <button type="button" class="form-submit" id="eodConfirmBtn" style="margin-top:6px;">Confirmer la clôture</button>
+      <div class="fiche-section-title" style="margin-top:26px;">Dernières clôtures</div>
+      <div id="eodHistoryList"><div class="empty-state">Aucune clôture enregistrée.</div></div>
+    </div>
+  </div>
+</div>
+
 <!-- ============ FIREBASE ============ -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -1289,6 +1431,8 @@ let expenses = {};
 let stock = {};
 let stockMovements = {};
 let employees = {};
+let sales = {};
+let cashClosings = {};
 let listenersInitialized = false;
 
 function initListeners(){
@@ -1296,7 +1440,7 @@ function initListeners(){
   listenersInitialized = true;
 
   db.ref(`${PROJECT_ROOT}/bookings`).on('value', (snap) => { bookings = snap.val() || {}; renderAll(); countAllTrash(); }, err => console.error(err));
-  db.ref(`${PROJECT_ROOT}/clients`).on('value', (snap) => { clients = snap.val() || {}; renderClients(); renderDashboard(); populateClientDropdowns(); countAllTrash(); }, err => console.error(err));
+  db.ref(`${PROJECT_ROOT}/clients`).on('value', (snap) => { clients = snap.val() || {}; renderClients(); renderDashboard(); populateClientDropdowns(); populateCaisseClientList(); countAllTrash(); }, err => console.error(err));
 
   db.ref(`${PROJECT_ROOT}/services`).once('value').then(snap => {
     if (!snap.exists()){
@@ -1308,14 +1452,16 @@ function initListeners(){
       return db.ref(`${PROJECT_ROOT}/services`).update(updates);
     }
   }).finally(() => {
-    db.ref(`${PROJECT_ROOT}/services`).on('value', (snap) => { services = snap.val() || {}; renderServices(); populateServiceDropdowns(); renderAll(); renderTeam(); }, err => console.error(err));
+    db.ref(`${PROJECT_ROOT}/services`).on('value', (snap) => { services = snap.val() || {}; renderServices(); populateServiceDropdowns(); renderAll(); renderTeam(); renderCaisseServiceList(); }, err => console.error(err));
   });
 
   db.ref(`${PROJECT_ROOT}/payments`).on('value', (snap) => { payments = snap.val() || {}; renderFinance(); renderDashboard(); renderClients(); countAllTrash(); }, err => console.error(err));
   db.ref(`${PROJECT_ROOT}/expenses`).on('value', (snap) => { expenses = snap.val() || {}; renderFinance(); countAllTrash(); }, err => console.error(err));
   db.ref(`${PROJECT_ROOT}/stock`).on('value', (snap) => { stock = snap.val() || {}; renderStock(); renderDashboard(); countAllTrash(); }, err => console.error(err));
   db.ref(`${PROJECT_ROOT}/stockMovements`).on('value', (snap) => { stockMovements = snap.val() || {}; renderStock(); }, err => console.error(err));
-  db.ref(`${PROJECT_ROOT}/employees`).on('value', (snap) => { employees = snap.val() || {}; renderTeam(); countAllTrash(); }, err => console.error(err));
+  db.ref(`${PROJECT_ROOT}/employees`).on('value', (snap) => { employees = snap.val() || {}; renderTeam(); populateCaisseEmployees(); countAllTrash(); }, err => console.error(err));
+  db.ref(`${PROJECT_ROOT}/sales`).on('value', (snap) => { sales = snap.val() || {}; }, err => console.error(err));
+  db.ref(`${PROJECT_ROOT}/cashClosings`).on('value', (snap) => { cashClosings = snap.val() || {}; renderEodHistory(); }, err => console.error(err));
   db.ref(`${PROJECT_ROOT}/auditLogs`).limitToLast(100).on('value', (snap) => { renderAuditLog(snap.val() || {}); }, err => console.error(err));
 }
 
@@ -2340,9 +2486,18 @@ document.querySelectorAll('[data-teamsub]').forEach(btn => {
     document.querySelectorAll('[data-teamsub]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     teamFilterMode = btn.dataset.teamsub;
-    renderTeam();
+    if (teamFilterMode === 'commissions'){
+      document.getElementById('teamGrid').style.display = 'none';
+      document.getElementById('commissionsView').style.display = '';
+      renderCommissions();
+    } else {
+      document.getElementById('teamGrid').style.display = '';
+      document.getElementById('commissionsView').style.display = 'none';
+      renderTeam();
+    }
   });
 });
+document.getElementById('commissionPeriodSelect').addEventListener('change', renderCommissions);
 
 function populateEmployeeServiceCheckboxes(selectedIds){
   const sel = selectedIds || [];
@@ -2802,6 +2957,318 @@ window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 updateOnlineStatus();
 updateSyncBadge();
+
+/* ============================================================
+   CAISSE — écran de vente rapide (panier multi-services,
+   employée, remise, paiement multi-modes, ticket, clôture)
+   ============================================================ */
+let cart = []; // [{serviceId, name, price}]
+
+function populateCaisseEmployees(){
+  const sel = document.getElementById('caisseEmployee');
+  const current = sel.value;
+  const activeEmp = Object.entries(employees).filter(([,e]) => !e.archived && e.active !== false)
+    .sort((a,b) => (a[1].name||'').localeCompare(b[1].name||''));
+  sel.innerHTML = '<option value="">— Aucune (facultatif) —</option>' +
+    activeEmp.map(([id,e]) => `<option value="${id}">${escapeHTML(e.name)}${e.commission ? ' ('+e.commission+'%)' : ''}</option>`).join('');
+  sel.value = current;
+}
+
+function populateCaisseClientList(){
+  const dl = document.getElementById('caisseClientList');
+  dl.innerHTML = Object.values(clients).filter(c => !c.archived)
+    .map(c => `<option value="${escapeHTML(c.name)}">`).join('');
+}
+
+function renderCaisseServiceList(){
+  const q = (document.getElementById('caisseSvcSearch').value||'').toLowerCase();
+  const box = document.getElementById('caisseSvcList');
+  const entries = Object.entries(services).filter(([,s]) => !s.archived && s.active !== false && (s.name||'').toLowerCase().includes(q))
+    .sort((a,b) => (a[1].name||'').localeCompare(b[1].name||''));
+  box.innerHTML = entries.length ? entries.map(([id,s]) => `
+    <div class="caisse-svc-row" onclick="addToCart('${id}')">
+      <span class="svc-name">${escapeHTML(s.name)}</span>
+      <span class="svc-price">${fmtDA(s.price)} DA</span>
+    </div>`).join('') : '<div class="cart-empty">Aucun service trouvé.</div>';
+}
+document.getElementById('caisseSvcSearch').addEventListener('input', renderCaisseServiceList);
+
+function addToCart(serviceId){
+  const s = services[serviceId];
+  if (!s) return;
+  cart.push({ serviceId, name: s.name, price: Number(s.price)||0 });
+  renderCart();
+}
+window.addToCart = addToCart;
+function removeFromCart(index){
+  cart.splice(index, 1);
+  renderCart();
+}
+window.removeFromCart = removeFromCart;
+
+function cartSubtotal(){ return cart.reduce((s,i) => s + i.price, 0); }
+function cartDiscountPercent(){ return Number(document.getElementById('caisseDiscount').value)||0; }
+function cartGrandTotal(){
+  const sub = cartSubtotal();
+  return Math.max(0, Math.round(sub - (sub*cartDiscountPercent()/100)));
+}
+
+function renderCart(){
+  const box = document.getElementById('cartList');
+  box.innerHTML = cart.length ? cart.map((item,i) => `
+    <div class="cart-item">
+      <span class="cart-item-name">${escapeHTML(item.name)}</span>
+      <span class="cart-item-price">${fmtDA(item.price)} DA</span>
+      <button class="cart-item-remove" onclick="removeFromCart(${i})">✕</button>
+    </div>`).join('') : '<div class="cart-empty">Aucun service ajouté.</div>';
+
+  const sub = cartSubtotal();
+  const discount = cartDiscountPercent();
+  const discountAmount = Math.round(sub*discount/100);
+  document.getElementById('cartSubtotal').textContent = fmtDA(sub) + ' DA';
+  document.getElementById('cartDiscountAmount').textContent = '-' + fmtDA(discountAmount) + ' DA';
+  document.getElementById('cartGrandTotal').textContent = fmtDA(cartGrandTotal()) + ' DA';
+
+  renderPaysplitRemaining();
+  updateEncaisserState();
+}
+document.getElementById('caisseDiscount').addEventListener('input', renderCart);
+
+/* ---------- Paiement multi-modes ---------- */
+function addPaysplitRow(prefillAmount){
+  const box = document.getElementById('paysplitRows');
+  const row = document.createElement('div');
+  row.className = 'paysplit-row';
+  row.innerHTML = `
+    <select class="paysplit-method">
+      <option>Espèces</option><option>CIB</option><option>CCP</option><option>Virement</option><option>BaridiMob</option><option>Autre</option>
+    </select>
+    <input type="number" class="paysplit-amount numpad-input" min="0" placeholder="Montant" value="${prefillAmount!=null ? prefillAmount : ''}">
+    <button type="button" class="paysplit-remove" onclick="this.parentElement.remove(); renderPaysplitRemaining(); updateEncaisserState();">✕</button>
+  `;
+  box.appendChild(row);
+  row.querySelector('.paysplit-amount').addEventListener('input', () => { renderPaysplitRemaining(); updateEncaisserState(); });
+  row.querySelector('.paysplit-method').addEventListener('change', updateEncaisserState);
+}
+document.getElementById('addPaysplitBtn').addEventListener('click', () => addPaysplitRow());
+
+function getPaysplits(){
+  return Array.from(document.querySelectorAll('.paysplit-row')).map(row => ({
+    method: row.querySelector('.paysplit-method').value,
+    amount: Number(row.querySelector('.paysplit-amount').value)||0
+  })).filter(p => p.amount > 0);
+}
+function paysplitTotal(){ return getPaysplits().reduce((s,p) => s+p.amount, 0); }
+
+function renderPaysplitRemaining(){
+  const remaining = cartGrandTotal() - paysplitTotal();
+  const el = document.getElementById('paysplitRemaining');
+  if (cart.length === 0){ el.textContent = ''; return; }
+  if (remaining === 0){
+    el.textContent = '✓ Montant entièrement réparti';
+    el.className = 'paysplit-remaining ok';
+  } else if (remaining > 0){
+    el.textContent = `Reste à répartir : ${fmtDA(remaining)} DA`;
+    el.className = 'paysplit-remaining bad';
+  } else {
+    el.textContent = `⚠️ Dépassement de ${fmtDA(-remaining)} DA`;
+    el.className = 'paysplit-remaining bad';
+  }
+}
+function updateEncaisserState(){
+  const ok = cart.length > 0 && cartGrandTotal() === paysplitTotal() && paysplitTotal() > 0;
+  document.getElementById('encaisserBtn').disabled = !ok;
+}
+
+/* ---------- Encaisser ---------- */
+document.getElementById('encaisserBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('encaisserBtn');
+  btn.disabled = true;
+  const originalLabel = btn.textContent;
+  btn.textContent = 'Encaissement…';
+
+  const clientName = document.getElementById('caisseClientSearch').value.trim() || 'Passage';
+  const matchedClient = Object.entries(clients).find(([,c]) => (c.name||'').toLowerCase() === clientName.toLowerCase());
+  const clientId = matchedClient ? matchedClient[0] : null;
+  const employeeId = document.getElementById('caisseEmployee').value || null;
+  const employee = employeeId ? employees[employeeId] : null;
+  const discountPercent = cartDiscountPercent();
+  const grossTotal = cartSubtotal();
+  const netTotal = cartGrandTotal();
+  const commissionPercent = employee ? Number(employee.commission)||0 : 0;
+  const commissionAmount = Math.round(netTotal*commissionPercent/100);
+  const paysplits = getPaysplits();
+  const date = todayISO();
+  const serviceNames = cart.map(i => i.name).join(', ');
+  const methodLabel = paysplits.length === 1 ? paysplits[0].method : paysplits.map(p => `${p.method} ${fmtDA(p.amount)}`).join(' + ');
+
+  const saleData = {
+    clientId, clientName,
+    employeeId, employeeName: employee ? employee.name : null,
+    items: cart.map(i => ({ serviceId: i.serviceId, name: i.name, price: i.price })),
+    grossTotal, discountPercent, netTotal,
+    commissionPercent, commissionAmount,
+    paysplits, date, createdAt: firebase.database.ServerValue.TIMESTAMP
+  };
+  // On écrit aussi une entrée "payments" classique (service = liste jointe, montant = net)
+  // pour que le Dashboard, la fiche cliente et l'onglet Finance existants continuent de
+  // fonctionner sans réécriture : "sales" porte le détail (panier, employée, splits),
+  // "payments" reste la source agrégée déjà utilisée partout ailleurs dans l'app.
+  const paymentData = {
+    clientId, clientName, clientPhone: matchedClient ? matchedClient[1].phone : '',
+    serviceId: cart.length === 1 ? cart[0].serviceId : null,
+    service: serviceNames,
+    bookingId: null,
+    grossAmount: grossTotal, discountPercent, amount: netTotal,
+    date, method: methodLabel,
+    createdAt: firebase.database.ServerValue.TIMESTAMP
+  };
+
+  try {
+    const saleRef = db.ref(`${PROJECT_ROOT}/sales`).push();
+    await saleRef.set(saleData);
+    const payRef = db.ref(`${PROJECT_ROOT}/payments`).push();
+    await payRef.set(paymentData);
+    logAudit('create', 'sales', saleRef.key, `${clientName} — ${fmtDA(netTotal)} DA${employee ? ' — '+employee.name : ''}`);
+
+    if (document.getElementById('caissePrint').checked){
+      printReceipt({
+        clientName, service: serviceNames, grossAmount: grossTotal,
+        discountPercent, netAmount: netTotal, method: methodLabel, date
+      });
+    }
+
+    // Reset du ticket pour la vente suivante
+    cart = [];
+    document.getElementById('caisseClientSearch').value = '';
+    document.getElementById('caisseEmployee').value = '';
+    document.getElementById('caisseDiscount').value = 0;
+    document.getElementById('paysplitRows').innerHTML = '';
+    addPaysplitRow();
+    renderCart();
+  } catch (err) {
+    if (!navigator.onLine){
+      saleData.createdAt = Date.now();
+      paymentData.createdAt = Date.now();
+      queueOfflineWrite(`${PROJECT_ROOT}/sales`, saleData);
+      queueOfflineWrite(`${PROJECT_ROOT}/payments`, paymentData);
+      if (document.getElementById('caissePrint').checked){
+        printReceipt({ clientName, service: serviceNames, grossAmount: grossTotal, discountPercent, netAmount: netTotal, method: methodLabel, date });
+      }
+      cart = [];
+      document.getElementById('paysplitRows').innerHTML = '';
+      addPaysplitRow();
+      renderCart();
+    } else {
+      alert("Erreur lors de l'encaissement.");
+      console.error(err);
+    }
+  } finally {
+    btn.textContent = originalLabel;
+  }
+});
+
+// Initialisation d'une première ligne de paiement au chargement
+addPaysplitRow();
+renderCart();
+
+/* ---------- Commissions par employée ---------- */
+function renderCommissions(){
+  const mode = document.getElementById('commissionPeriodSelect').value;
+  const today = todayISO();
+  let from = today, to = today;
+  if (mode === 'week'){
+    const days = getWeekDates(0);
+    from = days[0].toISOString().split('T')[0];
+    to = days[6].toISOString().split('T')[0];
+  } else if (mode === 'month'){
+    const mp = monthPrefix();
+    from = mp+'-01'; to = mp+'-31';
+  }
+  const activeEmp = Object.entries(employees).filter(([,e]) => !e.archived);
+  const salesList = Object.values(sales).filter(s => s.date >= from && s.date <= to && s.employeeId);
+
+  const box = document.getElementById('commissionsList');
+  if (!activeEmp.length){
+    box.innerHTML = '<div class="empty-state">Aucune employée enregistrée.</div>';
+    return;
+  }
+  const rows = activeEmp.map(([id, em]) => {
+    const empSales = salesList.filter(s => s.employeeId === id);
+    const ca = empSales.reduce((s,x) => s + (Number(x.netTotal)||0), 0);
+    const commission = empSales.reduce((s,x) => s + (Number(x.commissionAmount)||0), 0);
+    return { name: em.name, count: empSales.length, ca, commission };
+  }).sort((a,b) => b.ca - a.ca);
+
+  box.innerHTML = rows.map(r => `
+    <div class="commission-card">
+      <div class="commission-row">
+        <div>
+          <div class="commission-name">${escapeHTML(r.name)}</div>
+          <div class="commission-sub">${r.count} vente${r.count!==1?'s':''} · CA généré : ${fmtDA(r.ca)} DA</div>
+        </div>
+        <div class="commission-amount">${fmtDA(r.commission)} DA</div>
+      </div>
+    </div>`).join('') || '<div class="empty-state">Aucune vente sur cette période.</div>';
+}
+
+/* ---------- Clôture de caisse (End of Day) ---------- */
+function eodTheoreticalBreakdown(){
+  const today = todayISO();
+  const todaySales = Object.values(sales).filter(s => s.date === today);
+  const byMethod = {};
+  todaySales.forEach(s => {
+    (s.paysplits||[]).forEach(p => {
+      byMethod[p.method] = (byMethod[p.method]||0) + (Number(p.amount)||0);
+    });
+  });
+  const total = Object.values(byMethod).reduce((a,b) => a+b, 0);
+  return { byMethod, total };
+}
+document.getElementById('openEodBtn').addEventListener('click', () => {
+  const { byMethod, total } = eodTheoreticalBreakdown();
+  document.getElementById('eodBreakdown').innerHTML = Object.entries(byMethod).length
+    ? Object.entries(byMethod).map(([m,amt]) => `<div class="eod-row"><span>${escapeHTML(m)}</span><span>${fmtDA(amt)} DA</span></div>`).join('')
+    : '<div class="empty-state">Aucune vente enregistrée aujourd\'hui.</div>';
+  document.getElementById('eodTheoretical').textContent = fmtDA(total) + ' DA';
+  document.getElementById('eodCounted').value = '';
+  document.getElementById('eodNote').value = '';
+  document.getElementById('eodVarianceBox').innerHTML = '';
+  openModal('modalEod');
+});
+document.getElementById('eodCounted').addEventListener('input', () => {
+  const { total } = eodTheoreticalBreakdown();
+  const counted = Number(document.getElementById('eodCounted').value)||0;
+  const variance = counted - total;
+  const box = document.getElementById('eodVarianceBox');
+  if (document.getElementById('eodCounted').value === ''){ box.innerHTML = ''; return; }
+  box.innerHTML = `<div class="eod-variance ${variance===0?'zero':'diff'}">Écart : ${variance>0?'+':''}${fmtDA(variance)} DA</div>`;
+});
+document.getElementById('eodConfirmBtn').addEventListener('click', async () => {
+  const { byMethod, total } = eodTheoreticalBreakdown();
+  const counted = Number(document.getElementById('eodCounted').value)||0;
+  const variance = counted - total;
+  const user = auth.currentUser ? auth.currentUser.email : 'inconnu';
+  const data = {
+    date: todayISO(), theoreticalTotal: total, countedCash: counted, variance,
+    breakdown: byMethod, note: document.getElementById('eodNote').value.trim(),
+    closedBy: user, closedAt: firebase.database.ServerValue.TIMESTAMP
+  };
+  try {
+    const ref = db.ref(`${PROJECT_ROOT}/cashClosings`).push();
+    await ref.set(data);
+    logAudit('create', 'cashClosings', ref.key, `Clôture ${data.date} — écart ${fmtDA(variance)} DA`);
+    closeModal('modalEod');
+  } catch (err) { alert('Erreur.'); console.error(err); }
+});
+function renderEodHistory(){
+  const box = document.getElementById('eodHistoryList');
+  if (!box) return;
+  const entries = Object.values(cashClosings).sort((a,b) => (b.closedAt||0)-(a.closedAt||0)).slice(0,10);
+  box.innerHTML = entries.length ? entries.map(c => `
+    <div class="hist-row"><span>${formatDate(c.date)} — ${escapeHTML(c.closedBy||'')}${c.variance ? ` <span style="color:${c.variance<0?'var(--red)':'var(--green)'};">(${c.variance>0?'+':''}${fmtDA(c.variance)} DA)</span>` : ' (exact)'}</span><span class="hist-date">${fmtDA(c.theoreticalTotal)} DA</span></div>
+  `).join('') : '<div class="empty-state">Aucune clôture enregistrée.</div>';
+}
 </script>
 <div class="modal-overlay" id="modalTrash">
   <div class="modal-box" style="max-width:640px;">
